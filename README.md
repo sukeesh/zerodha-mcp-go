@@ -8,7 +8,9 @@
   <img src="https://raw.githubusercontent.com/sukeesh/sukeesh.github.io/refs/heads/master/assets/img/Zerodha_MCP.png" alt="Zerodha MCP Logo" width="200" />
 </p>
 
-[![Go](https://github.com/sukeesh/zerodha-mcp/workflows/Go/badge.svg)](https://github.com/sukeesh/zerodha-mcp/actions)
+<p align="center">
+[![Go](https://github.com/sukeesh/zerodha-mcp-go/workflows/Go/badge.svg)](https://github.com/sukeesh/zerodha-mcp-go/actions)
+</p>
 
 ## Overview
 Zerodha MCP Server provides an implementation of the Claude MCP (Model Completion Protocol) interface for Zerodha trading data. This allows Claude AI to access your Zerodha trading account information directly.
@@ -64,6 +66,11 @@ The binary will be installed to your GOBIN directory, which should be in your PA
 
 4. Restart Claude Desktop. When prompted, authenticate with your Zerodha Kite credentials.
 
+## Debugging
+
+The logs for MCP Server are available at `~/Library/Logs/Claude`
+
+
 ## Usage
 
 After setup, you can interact with your Zerodha account data directly through Claude. For example:
@@ -72,6 +79,7 @@ After setup, you can interact with your Zerodha account data directly through Cl
 - "What's my current margin availability?"
 - "Give me the latest price for RELIANCE"
 - "Show me my open positions with P&L"
+
 
 ## Available Features
 
