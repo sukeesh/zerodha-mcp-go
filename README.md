@@ -8,9 +8,7 @@
   <img src="https://raw.githubusercontent.com/sukeesh/sukeesh.github.io/refs/heads/master/assets/img/Zerodha_MCP.png" alt="Zerodha MCP Logo" width="200" />
 </p>
 
-<p align="center">
 [![Go](https://github.com/sukeesh/zerodha-mcp-go/workflows/Go/badge.svg)](https://github.com/sukeesh/zerodha-mcp-go/actions)
-</p>
 
 ## Overview
 Zerodha MCP Server provides an implementation of the Claude MCP (Model Completion Protocol) interface for Zerodha trading data. This allows Claude AI to access your Zerodha trading account information directly.
