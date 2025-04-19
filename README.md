@@ -1,6 +1,15 @@
-## Zerodha MCP Server
+# Zerodha MCP Server
 
-Zerodha MCP Server to communicate with your personal investments data.
+<p align="center">
+  <strong>Protocol to communicate with your Zerodha data written in Golang</strong>
+</p>
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/sukeesh/sukeesh.github.io/refs/heads/master/assets/img/Zerodha_MCP.png" alt="Zerodha MCP Logo" width="200" />
+</p>
+
+
+
 
 ## Setup
 
