@@ -8,14 +8,13 @@
   <img src="https://raw.githubusercontent.com/sukeesh/sukeesh.github.io/refs/heads/master/assets/img/Zerodha_MCP.png" alt="Zerodha MCP Logo" width="200" />
 </p>
 
-[![Build Status](https://github.com/sukeesh/zerodha-mcp/workflows/build/badge.svg)](https://github.com/sukeesh/zerodha-mcp/actions)
-[![Go Report Card](https://goreportcard.com/badge/github.com/sukeesh/zerodha-mcp)](https://goreportcard.com/report/github.com/sukeesh/zerodha-mcp)
+[![Build Status](https://github.com/sukeesh/zerodha-mcp-go/workflows/build/badge.svg)](https://github.com/sukeesh/zerodha-mcp-go/actions)
 
 ## Overview
 Zerodha MCP Server provides an implementation of the Claude MCP (Model Completion Protocol) interface for Zerodha trading data. This allows Claude AI to access your Zerodha trading account information directly.
 
 ## Prerequisites
-- [Go](https://go.dev/doc/install) (version 1.18 or later)
+- [Go](https://go.dev/doc/install) (version 1.21 or later)
 - A [Zerodha Kite](https://kite.zerodha.com) trading account
 - [Claude Desktop App](https://claude.ai/download)
 - API credentials from the [Kite Connect developer portal](https://developers.kite.trade/apps)
