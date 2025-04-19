@@ -35,7 +35,7 @@ You can generate the `zerodha-mcp` binary by running `go install` in this direct
 
 3. Setup re-direct URL in the dev portal to the below
 ```bash
-http://127.0.0.1:8080/auth
+http://127.0.0.1:5888/auth
 ```
 
 4. Restart Claude desktop app. It will ask you for authentication in the browser. Login with your Zerodha Kite credentials and start chatting on Claude.

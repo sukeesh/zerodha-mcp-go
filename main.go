@@ -50,7 +50,7 @@ func renderHTMLResponse(c *gin.Context, content string, status int) {
 	c.Data(status, "text/html; charset=utf-8", []byte(html))
 }
 
-func startRouter() *http.Server {
+func startRouter() (*http.Server, func()) {
 	gin.DefaultWriter = os.Stderr
 	gin.DefaultErrorWriter = os.Stderr
 
@@ -88,8 +88,19 @@ func startRouter() *http.Server {
 	})
 
 	srv := &http.Server{
-		Addr:    ":8080",
+		Addr:    ":5888",
 		Handler: r,
+	}
+
+	// Create a shutdown function
+	shutdownFn := func() {
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+
+		if err := srv.Shutdown(ctx); err != nil {
+			log.Printf("HTTP server shutdown error: %v", err)
+		}
+		log.Println("HTTP server stopped")
 	}
 
 	go func() {
@@ -98,7 +109,7 @@ func startRouter() *http.Server {
 		}
 	}()
 
-	return srv
+	return srv, shutdownFn
 }
 
 func kiteAuthenticate() *kiteconnect.Client {
@@ -133,11 +144,11 @@ func kiteAuthenticate() *kiteconnect.Client {
 	return kc
 }
 
-func mcpMain(s *server.MCPServer, kc *kiteconnect.Client) {
+func mcpMain(ctx context.Context, s *server.MCPServer, kc *kiteconnect.Client) {
 	z = internal.NewZerodhaMcpServer(kc)
 
-	kiteHoldingsTool := mcp.NewTool("fetch_holdings",
-		mcp.WithDescription("Fetch current holdings of the user, These are stock market holdings, Index fund holdings only which are invested via NSE/BSE Directly."),
+	kiteHoldingsTool := mcp.NewTool("get_kite_holdings",
+		mcp.WithDescription("Get current holdings in Zerodha Kite account. This includes stocks, ETFs, and other securities traded on NSE/BSE exchanges. Does not include mutual fund holdings."),
 	)
 	s.AddTool(kiteHoldingsTool, z.KiteHoldingsTool())
 
@@ -147,12 +158,12 @@ func mcpMain(s *server.MCPServer, kc *kiteconnect.Client) {
 	s.AddTool(auctionInstrumentsTool, z.AuctionInstrumentsTool())
 
 	positionsTool := mcp.NewTool("get_positions",
-		mcp.WithDescription("Retrieves list of DAY NET positions of the User on Zerodha"),
+		mcp.WithDescription("Get current day and net positions in your Zerodha account. Day positions show intraday trades, while net positions show delivery holdings and carried forward F&O positions. Includes quantity, average price, PnL and more details for each position."),
 	)
 	s.AddTool(positionsTool, z.Positions())
 
 	orderMarginsTool := mcp.NewTool("get_order_margins",
-		mcp.WithDescription("Retrieves list of order margins for a user"),
+		mcp.WithDescription("Get order margins for a specific instrument. This tool helps you check the margin requirements for placing orders on Zerodha. It provides the necessary information to ensure you have enough margin to execute trades."),
 		mcp.WithString("exchange",
 			mcp.Required(),
 			mcp.Description("The exchange value"),
@@ -194,12 +205,12 @@ func mcpMain(s *server.MCPServer, kc *kiteconnect.Client) {
 	s.AddTool(orderMarginsTool, z.OrderMargins())
 
 	quoteTool := mcp.NewTool("get_quote",
-		mcp.WithDescription("gets map of quotes for given instruments in the format of `exchange:tradingsymbol`"),
+		mcp.WithDescription("Get quote for a specific instrument. This tool provides real-time market data for stocks, ETFs, and other securities traded on NSE/BSE exchanges."),
 	)
 	s.AddTool(quoteTool, z.Quote())
 
 	ltpTool := mcp.NewTool("get_ltp",
-		mcp.WithDescription("gets LTP quote for given instrument in the format of `exchange:tradingsymbol`"),
+		mcp.WithDescription("Get Last Traded Price (LTP) for a specific instrument. This tool provides the latest price at which the instrument was traded in the market."),
 		mcp.WithString("instrument",
 			mcp.Required(),
 			mcp.Description("format of `exchange:tradingsymbol`"),
@@ -208,19 +219,19 @@ func mcpMain(s *server.MCPServer, kc *kiteconnect.Client) {
 	s.AddTool(ltpTool, z.LTP())
 
 	ohlcTool := mcp.NewTool("get_ohlc",
-		mcp.WithDescription("gets map of OHLC quotes for given instruments in the format of `exchange:tradingsymbol`"),
+		mcp.WithDescription("Get Open, High, Low, Close (OHLC) quotes for a specific instrument. This tool provides the historical price data for the instrument over a specific time period."),
 	)
 	s.AddTool(ohlcTool, z.OHLC())
 
-	// TODO: Historical data tool
+	// TODO: Complete Historical data tool. Need a way to consume huge amount of data.
 
 	instrumentsTool := mcp.NewTool("get_instruments",
-		mcp.WithDescription("retrieves list of instruments."),
+		mcp.WithDescription("Get list of all available instruments on Zerodha. This tool provides a comprehensive list of all the instruments that can be traded on Zerodha, including stocks, ETFs, futures, options, and more."),
 	)
 	s.AddTool(instrumentsTool, z.Instruments())
 
 	instrumentsByExchange := mcp.NewTool("get_instruments_by_exchange",
-		mcp.WithDescription("retrieves list of instruments by exchange"),
+		mcp.WithDescription("Get list of instruments by exchange. This tool allows you to filter and retrieve specific instruments based on the exchange they are traded on."),
 		mcp.WithString("exchange",
 			mcp.Required(),
 			mcp.Description("The exchange value"),
@@ -230,17 +241,17 @@ func mcpMain(s *server.MCPServer, kc *kiteconnect.Client) {
 	s.AddTool(instrumentsByExchange, z.InstrumentsByExchange())
 
 	mfInstruments := mcp.NewTool("get_mf_instruments",
-		mcp.WithDescription("retrieves list of mutual fund instruments."),
+		mcp.WithDescription("Get list of all available mutual fund instruments on Zerodha. This tool provides a comprehensive list of all the mutual fund instruments that can be traded on Zerodha."),
 	)
 	s.AddTool(mfInstruments, z.MFInstruments())
 
 	mfOrders := mcp.NewTool("get_mf_orders",
-		mcp.WithDescription("retrieves list of Mutual Fund orders."),
+		mcp.WithDescription("Get list of all Mutual Fund orders. This tool provides a comprehensive list of all the mutual fund orders that can be traded on Zerodha."),
 	)
 	s.AddTool(mfOrders, z.MFOrders())
 
 	mfOrderInfo := mcp.NewTool("get_mf_order_info",
-		mcp.WithDescription("get individual mutual fund order info."),
+		mcp.WithDescription("Get individual mutual fund order info. This tool provides detailed information about a specific mutual fund order, including the order ID, status, and other relevant details."),
 		mcp.WithString("orderId",
 			mcp.Required(),
 			mcp.Description("The Order ID of the mutual fund"),
@@ -248,7 +259,7 @@ func mcpMain(s *server.MCPServer, kc *kiteconnect.Client) {
 	s.AddTool(mfOrderInfo, z.MFOrderInfo())
 
 	mfSipInfo := mcp.NewTool("get_mf_sip_info",
-		mcp.WithDescription("get individual mutual fund order info."),
+		mcp.WithDescription("Get individual mutual fund SIP info. This tool provides detailed information about a specific mutual fund SIP, including the SIP ID, status, and other relevant details."),
 		mcp.WithString("sipId",
 			mcp.Required(),
 			mcp.Description("The SIP ID of the mutual fund"),
@@ -256,12 +267,12 @@ func mcpMain(s *server.MCPServer, kc *kiteconnect.Client) {
 	s.AddTool(mfSipInfo, z.MfSipInfo())
 
 	mfHoldings := mcp.NewTool("get_mf_holdings",
-		mcp.WithDescription("retrieves list of Mutual fund holdings for a user"),
+		mcp.WithDescription("Get list of Mutual fund holdings for a user. This tool provides a comprehensive list of all the mutual fund holdings that can be traded on Zerodha."),
 	)
 	s.AddTool(mfHoldings, z.MFHoldings())
 
 	mfHoldingsInfo := mcp.NewTool("get_mf_holdings_info",
-		mcp.WithDescription("get individual mutual fund holdings info."),
+		mcp.WithDescription("Get individual mutual fund holdings info. This tool provides detailed information about a specific mutual fund holding, including the holding ID, status, and other relevant details."),
 		mcp.WithString("isin",
 			mcp.Required(),
 			mcp.Description("The ISIN of the mutual fund holding"),
@@ -269,30 +280,38 @@ func mcpMain(s *server.MCPServer, kc *kiteconnect.Client) {
 	s.AddTool(mfHoldingsInfo, z.MFHoldingInfo())
 
 	mfAllottedIsins := mcp.NewTool("get_mf_allotted_isins",
-		mcp.WithDescription("get Allotted mutual fund ISINs."))
+		mcp.WithDescription("Get Allotted mutual fund ISINs. This tool provides a comprehensive list of all the mutual fund ISINs that can be traded on Zerodha."))
 	s.AddTool(mfAllottedIsins, z.MFAllottedISINs())
 
 	userProfile := mcp.NewTool("get_user_profile",
-		mcp.WithDescription("get basic user profile"),
+		mcp.WithDescription("Get basic user profile. This tool provides basic information about the user, including the user ID, name, and other relevant details."),
 	)
 	s.AddTool(userProfile, z.UserProfile())
 
-	fullUserProfile := mcp.NewTool("get_full_user_profile",
-		mcp.WithDescription("get full user profile"))
-	s.AddTool(fullUserProfile, z.FullUserProfile())
+	// TODO: Figure out the right permissions for this
+	//fullUserProfile := mcp.NewTool("get_full_user_profile",
+	//	mcp.WithDescription("get full user profile"))
+	//s.AddTool(fullUserProfile, z.FullUserProfile())
 
 	userMargins := mcp.NewTool("get_user_margins",
-		mcp.WithDescription("get all user margins"))
+		mcp.WithDescription("Get all user margins. This tool provides a comprehensive list of all the margins that can be traded on Zerodha."))
 	s.AddTool(userMargins, z.UserMargins())
 
 	userSegmentMargins := mcp.NewTool("get_user_segment_margins",
-		mcp.WithDescription("gets segment wise user margins."),
+		mcp.WithDescription("Get segment wise user margins. This tool provides a comprehensive list of all the margins that can be traded on Zerodha."),
 		mcp.WithString("segment",
 			mcp.Required(),
 			mcp.Description("segment of the mutual fund holding"),
 		),
 	)
 	s.AddTool(userSegmentMargins, z.UserSegmentMargins())
+
+	// Start the server and handle interruption via context
+	go func() {
+		<-ctx.Done()
+		// This will only happen when ctx is cancelled - implement any cleanup needed here
+		log.Println("MCP server received shutdown signal")
+	}()
 
 	if err := server.ServeStdio(s); err != nil {
 		log.Fatalf("Server error: %v", err)
@@ -313,32 +332,40 @@ func main() {
 		server.WithRecovery(),
 	)
 
-	// Start the router in a goroutine and get the HTTP server
-	var httpServer *http.Server
-	httpServer = startRouter()
+	// Start the router and get the shutdown function
+	_, httpShutdownFn := startRouter()
 
 	kc := kiteAuthenticate()
 	fmt.Fprintln(os.Stderr, "Zerodha authentication successful, starting MCP Server...")
 
+	// Create a context that can be cancelled
+	ctx, cancel := context.WithCancel(context.Background())
+
 	// Start the MCP server in a goroutine
+	mcpDone := make(chan struct{})
 	go func() {
-		mcpMain(s, kc)
+		defer close(mcpDone)
+		mcpMain(ctx, s, kc)
 	}()
 
+	// Wait for quit signal
 	<-quit
 	log.Println("Shutting down server...")
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
+	// Cancel the context to signal all operations to stop
+	cancel()
 
-	if httpServer != nil {
-		if err := httpServer.Shutdown(ctx); err != nil {
-			log.Printf("Server forced to shutdown: %v", err)
-		}
-		log.Println("HTTP server stopped")
+	// Call the HTTP server shutdown function
+	httpShutdownFn()
+
+	// Wait for the MCP server to finish or timeout
+	select {
+	case <-mcpDone:
+		log.Println("MCP server stopped")
+	case <-time.After(5 * time.Second):
+		log.Println("MCP server shutdown timed out")
 	}
 
-	time.Sleep(1 * time.Second)
 	log.Println("Server exiting")
 	os.Exit(0)
 }
