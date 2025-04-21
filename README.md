@@ -35,6 +35,13 @@ go install
 
 The binary will be installed to your GOBIN directory, which should be in your PATH.
 
+## Usage with an MCP Client
+
+
+https://github.com/user-attachments/assets/849c4aca-0ca2-4aed-a9be-3df135f8a5c5
+
+
+
 ## Configuration
 
 1. Get your `ZERODHA_API_KEY` and `ZERODHA_API_SECRET` from the [Kite Connect developer portal](https://developers.kite.trade/apps)
