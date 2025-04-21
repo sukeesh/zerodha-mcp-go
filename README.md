@@ -75,15 +75,6 @@ When the Claude desktop is shutdown, the underlying MCP Server is not getting ki
 kill -9 $(lsof -t -i:5888)
 ```
 
-## Usage
-
-After setup, you can interact with your Zerodha account data directly through Claude. For example:
-
-- "Show me my current portfolio holdings"
-- "What's my current margin availability?"
-- "Give me the latest price for RELIANCE"
-- "Show me my open positions with P&L"
-
 ## Available Tools
 
 | Category | Tool | Status | Description |
@@ -107,6 +98,17 @@ After setup, you can interact with your Zerodha account data directly through Cl
 | | `get_mf_order_info` | ✅ | Get detailed information about specific mutual fund orders |
 | | `get_mf_sip_info` | ✅ | Get information about mutual fund SIPs |
 | | `get_mf_allotted_isins` | ✅ | Get allotted mutual fund ISINs |
+
+
+## Usage
+
+After setup, you can interact with your Zerodha account data directly through Claude. For example:
+
+- "Show me my current portfolio holdings"
+- "What's my current margin availability?"
+- "Give me the latest price for RELIANCE"
+- "Show me my open positions with P&L"
+
 
 ## Limitations
 
