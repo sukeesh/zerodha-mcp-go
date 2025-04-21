@@ -72,9 +72,8 @@ The logs for MCP Server are available at `~/Library/Logs/Claude`
 
 When the Claude desktop is shutdown, the underlying MCP Server is not getting killed.
 ```bash
-lsof -i :5888
+kill -9 $(lsof -t -i:5888)
 ```
-and then run `kill <process-id>`
 
 ## Usage
 
