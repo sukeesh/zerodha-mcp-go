@@ -68,6 +68,13 @@ The binary will be installed to your GOBIN directory, which should be in your PA
 
 The logs for MCP Server are available at `~/Library/Logs/Claude`
 
+### Known Bugs
+
+When the Claude desktop is shutdown, the underlying MCP Server is not getting killed.
+```bash
+lsof -i :5888
+```
+and then run `kill <process-id>`
 
 ## Usage
 
