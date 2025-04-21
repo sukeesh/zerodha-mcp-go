@@ -37,9 +37,13 @@ The binary will be installed to your GOBIN directory, which should be in your PA
 
 ## Usage with an MCP Client
 
+### GPT 4o mini
 
 https://github.com/user-attachments/assets/849c4aca-0ca2-4aed-a9be-3df135f8a5c5
 
+### Claude Sonnet 3.7
+
+<img width="500" alt="Claude as MCP Client" src="https://github.com/user-attachments/assets/932ec561-d7b4-4e58-8f1c-1f33b9c99896" />
 
 
 ## Configuration
