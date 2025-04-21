@@ -84,19 +84,29 @@ After setup, you can interact with your Zerodha account data directly through Cl
 - "Give me the latest price for RELIANCE"
 - "Show me my open positions with P&L"
 
+## Available Tools
 
-## Available Features
-
-Currently, this server exposes read-only (FETCH) endpoints for:
-
-- Portfolio holdings
-- Positions (day and net)
-- Order margins
-- Real-time quotes and LTP (Last Traded Price)
-- OHLC data
-- Instruments list
-- Mutual fund information
-- User profile and margins
+| Category | Tool | Status | Description |
+|----------|------|--------|-------------|
+| **Account Information** | `get_user_profile` | ✅ | Get basic user profile information |
+| | `get_user_margins` | ✅ | Get all user margins |
+| | `get_user_segment_margins` | ✅ | Get segment-wise user margins |
+| **Portfolio & Positions** | `get_kite_holdings` | ✅ | Get current holdings in Zerodha Kite account |
+| | `get_positions` | ✅ | Get current day and net positions |
+| | `get_order_margins` | ✅ | Get margin requirements for specific orders |
+| **Market Data** | `get_ltp` | ✅ | Get Last Traded Price for specific instruments |
+| | `get_quote` | ✅ | Get detailed quotes for specific instruments |
+| | `get_ohlc` | ✅ | Get Open, High, Low, Close quotes |
+| **Instruments** | `get_instruments` | ✅ | Get list of all available instruments on Zerodha |
+| | `get_instruments_by_exchange` | ✅ | Get instruments filtered by exchange |
+| | `get_auction_instruments` | ✅ | Get instruments available for auction sessions |
+| **Mutual Funds** | `get_mf_instruments` | ✅ | Get list of all available mutual fund instruments |
+| | `get_mf_holdings` | ✅ | Get list of mutual fund holdings |
+| | `get_mf_holdings_info` | ✅ | Get detailed information about mutual fund holdings |
+| | `get_mf_orders` | ✅ | Get list of all mutual fund orders |
+| | `get_mf_order_info` | ✅ | Get detailed information about specific mutual fund orders |
+| | `get_mf_sip_info` | ✅ | Get information about mutual fund SIPs |
+| | `get_mf_allotted_isins` | ✅ | Get allotted mutual fund ISINs |
 
 ## Limitations
 
