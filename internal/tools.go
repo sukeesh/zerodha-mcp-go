@@ -30,8 +30,8 @@ func (z *ZerodhaMcpServer) SetKc(kc *kiteconnect.Client) {
 }
 
 func getHoldingText(holding kiteconnect.Holding) string {
-	holdingTemplate := "Holding: Tradingsymbol: %s, Exchange: %s, InstrumentToken %d, ISIN %s, Product %s, Price %.2f, UsedQuantity %d, Quantity %d, T1Quantity %d, RealisedQuantity %d, Average Price %.2f, Last Price %.2f, Close Price %.2f, PnL %.2f, DayChange %.2f, DayChangePercentage %.2f, MTFHolding: %x"
-	return fmt.Sprintf(holdingTemplate, holding.Tradingsymbol, holding.Exchange, holding.InstrumentToken, holding.ISIN, holding.Product, holding.Price, holding.UsedQuantity, holding.Quantity, holding.T1Quantity, holding.RealisedQuantity, holding.AveragePrice, holding.LastPrice, holding.ClosePrice, holding.PnL, holding.DayChange, holding.DayChangePercentage, holding.MTF)
+	holdingTemplate := "Holding: Tradingsymbol: %s, Exchange: %s, InstrumentToken %d, ISIN %s, Product %s, Price %.2f, UsedQuantity %d, Quantity %d, T1Quantity %d, RealisedQuantity %d, Average Price %.2f, Last Price %.2f, Close Price %.2f, PnL %.2f, DayChange %.2f, DayChangePercentage %.2f, Buy Value: %.2f, Current Total Value: %.2f, MTFHolding: %x"
+	return fmt.Sprintf(holdingTemplate, holding.Tradingsymbol, holding.Exchange, holding.InstrumentToken, holding.ISIN, holding.Product, holding.Price, holding.UsedQuantity, holding.Quantity, holding.T1Quantity, holding.RealisedQuantity, holding.AveragePrice, holding.LastPrice, holding.ClosePrice, holding.PnL, holding.DayChange, holding.DayChangePercentage, holding.AveragePrice*float64(holding.Quantity), holding.LastPrice*float64(holding.Quantity), holding.MTF)
 }
 
 func (z *ZerodhaMcpServer) KiteHoldingsTool() server.ToolHandlerFunc {
