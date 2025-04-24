@@ -29,6 +29,11 @@ func (z *ZerodhaMcpServer) SetKc(kc *kiteconnect.Client) {
 	z.kc = kc
 }
 
+func getHoldingText(holding kiteconnect.Holding) string {
+	holdingTemplate := "Holding: Tradingsymbol: %s, Exchange: %s, InstrumentToken %d, ISIN %s, Product %s, Price %.2f, UsedQuantity %d, Quantity %d, T1Quantity %d, RealisedQuantity %d, Average Price %.2f, Last Price %.2f, Close Price %.2f, PnL %.2f, DayChange %.2f, DayChangePercentage %.2f, MTFHolding: %x"
+	return fmt.Sprintf(holdingTemplate, holding.Tradingsymbol, holding.Exchange, holding.InstrumentToken, holding.ISIN, holding.Product, holding.Price, holding.UsedQuantity, holding.Quantity, holding.T1Quantity, holding.RealisedQuantity, holding.AveragePrice, holding.LastPrice, holding.ClosePrice, holding.PnL, holding.DayChange, holding.DayChangePercentage, holding.MTF)
+}
+
 func (z *ZerodhaMcpServer) KiteHoldingsTool() server.ToolHandlerFunc {
 	return func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		holdings, err := z.kc.GetHoldings()
@@ -37,7 +42,7 @@ func (z *ZerodhaMcpServer) KiteHoldingsTool() server.ToolHandlerFunc {
 		}
 		holdingsText := ""
 		for _, holding := range holdings {
-			eachHolding := fmt.Sprint(holding)
+			eachHolding := getHoldingText(holding)
 			holdingsText += eachHolding + "\n"
 		}
 
