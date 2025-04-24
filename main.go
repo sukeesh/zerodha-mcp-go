@@ -206,6 +206,10 @@ func mcpMain(ctx context.Context, s *server.MCPServer, kc *kiteconnect.Client) {
 
 	quoteTool := mcp.NewTool("get_quote",
 		mcp.WithDescription("Get quote for a specific instrument. This tool provides real-time market data for stocks, ETFs, and other securities traded on NSE/BSE exchanges."),
+		mcp.WithString("instrument",
+			mcp.Required(),
+			mcp.Description("format of `exchange:tradingsymbol`"),
+		),
 	)
 	s.AddTool(quoteTool, z.Quote())
 
@@ -220,6 +224,10 @@ func mcpMain(ctx context.Context, s *server.MCPServer, kc *kiteconnect.Client) {
 
 	ohlcTool := mcp.NewTool("get_ohlc",
 		mcp.WithDescription("Get Open, High, Low, Close (OHLC) quotes for a specific instrument. This tool provides the historical price data for the instrument over a specific time period."),
+		mcp.WithString("instrument",
+			mcp.Required(),
+			mcp.Description("format of `exchange:tradingsymbol`"),
+		),
 	)
 	s.AddTool(ohlcTool, z.OHLC())
 
