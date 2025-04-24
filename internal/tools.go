@@ -215,7 +215,7 @@ func (z *ZerodhaMcpServer) Instruments() server.ToolHandlerFunc {
 		if err != nil {
 			return nil, err
 		}
-		instrumentsText := fmt.Sprintf("%s", instruments)
+		instrumentsText := fmt.Sprint(instruments)
 		return mcp.NewToolResultText(instrumentsText), nil
 	}
 }
@@ -227,7 +227,7 @@ func (z *ZerodhaMcpServer) InstrumentsByExchange() server.ToolHandlerFunc {
 		if err != nil {
 			return nil, err
 		}
-		instrumentsText := fmt.Sprintf("%s", instruments)
+		instrumentsText := fmt.Sprint(instruments)
 		return mcp.NewToolResultText(instrumentsText), nil
 	}
 }
@@ -238,7 +238,7 @@ func (z *ZerodhaMcpServer) MFInstruments() server.ToolHandlerFunc {
 		if err != nil {
 			return nil, err
 		}
-		instrumentsText := fmt.Sprintf("%s", instruments)
+		instrumentsText := fmt.Sprint(instruments)
 		return mcp.NewToolResultText(instrumentsText), nil
 	}
 }
@@ -249,7 +249,7 @@ func (z *ZerodhaMcpServer) MFOrders() server.ToolHandlerFunc {
 		if err != nil {
 			return nil, err
 		}
-		mfOrdersText := fmt.Sprintf("%s", mfOrders)
+		mfOrdersText := fmt.Sprint(mfOrders)
 		return mcp.NewToolResultText(mfOrdersText), nil
 	}
 }
@@ -284,7 +284,7 @@ func (z *ZerodhaMcpServer) MFHoldings() server.ToolHandlerFunc {
 		if err != nil {
 			return nil, err
 		}
-		holdingsText := fmt.Sprintf("%s", holdings)
+		holdingsText := fmt.Sprint(holdings)
 		return mcp.NewToolResultText(holdingsText), nil
 	}
 }
@@ -340,7 +340,7 @@ func (z *ZerodhaMcpServer) UserMargins() server.ToolHandlerFunc {
 		if err != nil {
 			return nil, err
 		}
-		userMarginsText := fmt.Sprintf("%s", userMargins)
+		userMarginsText := fmt.Sprint(userMargins)
 		return mcp.NewToolResultText(userMarginsText), nil
 	}
 }
