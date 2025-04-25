@@ -3,6 +3,7 @@ package internal
 import (
 	"context"
 	"fmt"
+	"reflect"
 	"strconv"
 	"time"
 
@@ -29,6 +30,31 @@ func (z *ZerodhaMcpServer) SetKc(kc *kiteconnect.Client) {
 	z.kc = kc
 }
 
+func printStruct(s interface{}) string {
+	val := reflect.ValueOf(s)
+	typ := reflect.TypeOf(s)
+
+	if val.Kind() == reflect.Ptr {
+		val = val.Elem()
+		typ = typ.Elem()
+	}
+
+	returnVal := ""
+
+	for i := 0; i < val.NumField(); i++ {
+		field := val.Field(i)
+		fieldName := typ.Field(i).Name
+		returnVal += fmt.Sprintf("%s: %v, ", fieldName, field.Interface())
+	}
+
+	return returnVal
+}
+
+func getHoldingText(holding kiteconnect.Holding) string {
+	holdingTemplate := "Holding: Tradingsymbol: %s, Exchange: %s, InstrumentToken %d, ISIN %s, Product %s, Price %.2f, UsedQuantity %d, Quantity %d, T1Quantity %d, RealisedQuantity %d, Average Price %.2f, Last Price %.2f, Close Price %.2f, PnL %.2f, DayChange %.2f, DayChangePercentage %.2f, Buy Value: %.2f, Current Total Value: %.2f, MTFHolding: %x"
+	return fmt.Sprintf(holdingTemplate, holding.Tradingsymbol, holding.Exchange, holding.InstrumentToken, holding.ISIN, holding.Product, holding.Price, holding.UsedQuantity, holding.Quantity, holding.T1Quantity, holding.RealisedQuantity, holding.AveragePrice, holding.LastPrice, holding.ClosePrice, holding.PnL, holding.DayChange, holding.DayChangePercentage, holding.AveragePrice*float64(holding.Quantity), holding.LastPrice*float64(holding.Quantity), holding.MTF)
+}
+
 func (z *ZerodhaMcpServer) KiteHoldingsTool() server.ToolHandlerFunc {
 	return func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		holdings, err := z.kc.GetHoldings()
@@ -37,7 +63,7 @@ func (z *ZerodhaMcpServer) KiteHoldingsTool() server.ToolHandlerFunc {
 		}
 		holdingsText := ""
 		for _, holding := range holdings {
-			eachHolding := fmt.Sprint(holding)
+			eachHolding := getHoldingText(holding)
 			holdingsText += eachHolding + "\n"
 		}
 
@@ -53,7 +79,7 @@ func (z *ZerodhaMcpServer) AuctionInstrumentsTool() server.ToolHandlerFunc {
 		}
 		auctionInstrumentsText := ""
 		for _, auctionInstrument := range auctionInstruments {
-			eachAuctionInstrument := fmt.Sprint(auctionInstrument)
+			eachAuctionInstrument := printStruct(auctionInstrument)
 			auctionInstrumentsText += eachAuctionInstrument + "\n"
 		}
 
@@ -69,12 +95,12 @@ func (z *ZerodhaMcpServer) Positions() server.ToolHandlerFunc {
 		}
 		dayPositions := "DAY POSITIONS --- "
 		for _, eachPosition := range positions.Day {
-			eachPositionText := fmt.Sprint(eachPosition)
+			eachPositionText := printStruct(eachPosition)
 			dayPositions += eachPositionText + "\n"
 		}
 		netPositions := "NET POSITIONS --- "
 		for _, position := range positions.Net {
-			eachPosition := fmt.Sprint(position)
+			eachPosition := printStruct(position)
 			netPositions += eachPosition + "\n"
 		}
 
@@ -118,7 +144,7 @@ func (z *ZerodhaMcpServer) OrderMargins() server.ToolHandlerFunc {
 
 		orderMarginsText := ""
 		for _, orderMargin := range orderMargins {
-			eachOrderMargin := fmt.Sprint(orderMargin)
+			eachOrderMargin := printStruct(orderMargin)
 			orderMarginsText += eachOrderMargin + "\n"
 		}
 		return mcp.NewToolResultText(orderMarginsText), nil
@@ -132,7 +158,7 @@ func (z *ZerodhaMcpServer) Quote() server.ToolHandlerFunc {
 		if err != nil {
 			return nil, err
 		}
-		quoteStr := fmt.Sprint(quote)
+		quoteStr := printStruct(quote)
 		return mcp.NewToolResultText(quoteStr), nil
 	}
 }
@@ -153,7 +179,7 @@ func (z *ZerodhaMcpServer) LTP() server.ToolHandlerFunc {
 		if err != nil {
 			return nil, err
 		}
-		ltpStr := fmt.Sprint(ltp)
+		ltpStr := printStruct(ltp)
 		return mcp.NewToolResultText(ltpStr), nil
 	}
 }
@@ -165,7 +191,7 @@ func (z *ZerodhaMcpServer) OHLC() server.ToolHandlerFunc {
 		if err != nil {
 			return nil, err
 		}
-		ohlcStr := fmt.Sprint(ohlc)
+		ohlcStr := printStruct(ohlc)
 		return mcp.NewToolResultText(ohlcStr), nil
 	}
 }
@@ -204,7 +230,7 @@ func (z *ZerodhaMcpServer) HistoricalData() server.ToolHandlerFunc {
 			return nil, err
 		}
 
-		historicalDataStr := fmt.Sprint(historicalData)
+		historicalDataStr := printStruct(historicalData)
 		return mcp.NewToolResultText(historicalDataStr), nil
 	}
 }
@@ -215,7 +241,7 @@ func (z *ZerodhaMcpServer) Instruments() server.ToolHandlerFunc {
 		if err != nil {
 			return nil, err
 		}
-		instrumentsText := fmt.Sprint(instruments)
+		instrumentsText := printStruct(instruments)
 		return mcp.NewToolResultText(instrumentsText), nil
 	}
 }
@@ -227,7 +253,7 @@ func (z *ZerodhaMcpServer) InstrumentsByExchange() server.ToolHandlerFunc {
 		if err != nil {
 			return nil, err
 		}
-		instrumentsText := fmt.Sprint(instruments)
+		instrumentsText := printStruct(instruments)
 		return mcp.NewToolResultText(instrumentsText), nil
 	}
 }
@@ -238,7 +264,7 @@ func (z *ZerodhaMcpServer) MFInstruments() server.ToolHandlerFunc {
 		if err != nil {
 			return nil, err
 		}
-		instrumentsText := fmt.Sprint(instruments)
+		instrumentsText := printStruct(instruments)
 		return mcp.NewToolResultText(instrumentsText), nil
 	}
 }
@@ -249,7 +275,7 @@ func (z *ZerodhaMcpServer) MFOrders() server.ToolHandlerFunc {
 		if err != nil {
 			return nil, err
 		}
-		mfOrdersText := fmt.Sprint(mfOrders)
+		mfOrdersText := printStruct(mfOrders)
 		return mcp.NewToolResultText(mfOrdersText), nil
 	}
 }
@@ -261,7 +287,7 @@ func (z *ZerodhaMcpServer) MFOrderInfo() server.ToolHandlerFunc {
 		if err != nil {
 			return nil, err
 		}
-		mfOrderInfoStr := fmt.Sprint(mfOrderInfo)
+		mfOrderInfoStr := printStruct(mfOrderInfo)
 		return mcp.NewToolResultText(mfOrderInfoStr), nil
 	}
 }
@@ -273,7 +299,7 @@ func (z *ZerodhaMcpServer) MfSipInfo() server.ToolHandlerFunc {
 		if err != nil {
 			return nil, err
 		}
-		mfSipInfoStr := fmt.Sprint(mfSipInfo)
+		mfSipInfoStr := printStruct(mfSipInfo)
 		return mcp.NewToolResultText(mfSipInfoStr), nil
 	}
 }
@@ -284,7 +310,7 @@ func (z *ZerodhaMcpServer) MFHoldings() server.ToolHandlerFunc {
 		if err != nil {
 			return nil, err
 		}
-		holdingsText := fmt.Sprint(holdings)
+		holdingsText := printStruct(holdings)
 		return mcp.NewToolResultText(holdingsText), nil
 	}
 }
@@ -296,7 +322,7 @@ func (z *ZerodhaMcpServer) MFHoldingInfo() server.ToolHandlerFunc {
 		if err != nil {
 			return nil, err
 		}
-		holdingInfoStr := fmt.Sprint(holdingInfo)
+		holdingInfoStr := printStruct(holdingInfo)
 		return mcp.NewToolResultText(holdingInfoStr), nil
 	}
 }
@@ -318,7 +344,7 @@ func (z *ZerodhaMcpServer) UserProfile() server.ToolHandlerFunc {
 		if err != nil {
 			return nil, err
 		}
-		userProfileStr := fmt.Sprint(userProfile)
+		userProfileStr := printStruct(userProfile)
 		return mcp.NewToolResultText(userProfileStr), nil
 	}
 }
@@ -329,7 +355,7 @@ func (z *ZerodhaMcpServer) FullUserProfile() server.ToolHandlerFunc {
 		if err != nil {
 			return nil, err
 		}
-		userProfileStr := fmt.Sprint(userProfile)
+		userProfileStr := printStruct(userProfile)
 		return mcp.NewToolResultText(userProfileStr), nil
 	}
 }
@@ -340,7 +366,7 @@ func (z *ZerodhaMcpServer) UserMargins() server.ToolHandlerFunc {
 		if err != nil {
 			return nil, err
 		}
-		userMarginsText := fmt.Sprint(userMargins)
+		userMarginsText := printStruct(userMargins)
 		return mcp.NewToolResultText(userMarginsText), nil
 	}
 }
@@ -352,7 +378,7 @@ func (z *ZerodhaMcpServer) UserSegmentMargins() server.ToolHandlerFunc {
 		if err != nil {
 			return nil, err
 		}
-		userSegmentMarginsText := fmt.Sprintf("%s", userSegmentMargins)
+		userSegmentMarginsText := printStruct(userSegmentMargins)
 		return mcp.NewToolResultText(userSegmentMarginsText), nil
 	}
 }
