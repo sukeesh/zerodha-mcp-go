@@ -39,13 +39,14 @@ func printStruct(s interface{}) string {
 		typ = typ.Elem()
 	}
 
-	returnVal := ""
+	returnVal := "<start> "
 
 	for i := 0; i < val.NumField(); i++ {
 		field := val.Field(i)
 		fieldName := typ.Field(i).Name
 		returnVal += fmt.Sprintf("%s: %v, ", fieldName, field.Interface())
 	}
+	returnVal += " <end>"
 
 	return returnVal
 }
@@ -230,7 +231,11 @@ func (z *ZerodhaMcpServer) HistoricalData() server.ToolHandlerFunc {
 			return nil, err
 		}
 
-		historicalDataStr := printStruct(historicalData)
+		historicalDataStr := ""
+		for _, candle := range historicalData {
+			eachCandle := printStruct(candle)
+			historicalDataStr += eachCandle + "\n"
+		}
 		return mcp.NewToolResultText(historicalDataStr), nil
 	}
 }
@@ -241,7 +246,11 @@ func (z *ZerodhaMcpServer) Instruments() server.ToolHandlerFunc {
 		if err != nil {
 			return nil, err
 		}
-		instrumentsText := printStruct(instruments)
+		instrumentsText := ""
+		for _, instrument := range instruments {
+			eachInstrument := printStruct(instrument)
+			instrumentsText += eachInstrument + "\n"
+		}
 		return mcp.NewToolResultText(instrumentsText), nil
 	}
 }
@@ -253,7 +262,11 @@ func (z *ZerodhaMcpServer) InstrumentsByExchange() server.ToolHandlerFunc {
 		if err != nil {
 			return nil, err
 		}
-		instrumentsText := printStruct(instruments)
+		instrumentsText := ""
+		for _, instrument := range instruments {
+			eachInstrument := printStruct(instrument)
+			instrumentsText += eachInstrument + "\n"
+		}
 		return mcp.NewToolResultText(instrumentsText), nil
 	}
 }
@@ -264,7 +277,11 @@ func (z *ZerodhaMcpServer) MFInstruments() server.ToolHandlerFunc {
 		if err != nil {
 			return nil, err
 		}
-		instrumentsText := printStruct(instruments)
+		instrumentsText := ""
+		for _, instrument := range instruments {
+			eachInstrument := printStruct(instrument)
+			instrumentsText += eachInstrument + "\n"
+		}
 		return mcp.NewToolResultText(instrumentsText), nil
 	}
 }
@@ -275,7 +292,11 @@ func (z *ZerodhaMcpServer) MFOrders() server.ToolHandlerFunc {
 		if err != nil {
 			return nil, err
 		}
-		mfOrdersText := printStruct(mfOrders)
+		mfOrdersText := ""
+		for _, order := range mfOrders {
+			eachOrder := printStruct(order)
+			mfOrdersText += eachOrder + "\n"
+		}
 		return mcp.NewToolResultText(mfOrdersText), nil
 	}
 }
@@ -310,7 +331,11 @@ func (z *ZerodhaMcpServer) MFHoldings() server.ToolHandlerFunc {
 		if err != nil {
 			return nil, err
 		}
-		holdingsText := printStruct(holdings)
+		holdingsText := ""
+		for _, holding := range holdings {
+			eachHolding := printStruct(holding)
+			holdingsText += eachHolding + "\n"
+		}
 		return mcp.NewToolResultText(holdingsText), nil
 	}
 }
