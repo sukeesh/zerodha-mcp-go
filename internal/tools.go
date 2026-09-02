@@ -114,15 +114,15 @@ func (z *ZerodhaMcpServer) OrderMargins() server.ToolHandlerFunc {
 	return func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		// TODO: Currently accepting only single object, figure out a way with mcp.WithObject to deal with slice of objects
 
-		exchange := request.Params.Arguments["exchange"].(string)
-		tradingSymbol := request.Params.Arguments["tradingSymbol"].(string)
-		transactionType := request.Params.Arguments["transactionType"].(string)
-		variety := request.Params.Arguments["variety"].(string)
-		product := request.Params.Arguments["product"].(string)
-		orderType := request.Params.Arguments["orderType"].(string)
-		quantity := request.Params.Arguments["quantity"].(float64)
-		price := request.Params.Arguments["price"].(float64)
-		triggerPrice := request.Params.Arguments["triggerPrice"].(float64)
+		exchange := request.GetArguments()["exchange"].(string)
+		tradingSymbol := request.GetArguments()["tradingSymbol"].(string)
+		transactionType := request.GetArguments()["transactionType"].(string)
+		variety := request.GetArguments()["variety"].(string)
+		product := request.GetArguments()["product"].(string)
+		orderType := request.GetArguments()["orderType"].(string)
+		quantity := request.GetArguments()["quantity"].(float64)
+		price := request.GetArguments()["price"].(float64)
+		triggerPrice := request.GetArguments()["triggerPrice"].(float64)
 
 		orderMargins, err := z.kc.GetOrderMargins(kiteconnect.GetMarginParams{
 			OrderParams: []kiteconnect.OrderMarginParam{
@@ -154,7 +154,7 @@ func (z *ZerodhaMcpServer) OrderMargins() server.ToolHandlerFunc {
 
 func (z *ZerodhaMcpServer) Quote() server.ToolHandlerFunc {
 	return func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-		instrument := request.Params.Arguments["instrument"].(string)
+		instrument := request.GetArguments()["instrument"].(string)
 		quote, err := z.kc.GetQuote(instrument)
 		if err != nil {
 			return nil, err
@@ -166,7 +166,7 @@ func (z *ZerodhaMcpServer) Quote() server.ToolHandlerFunc {
 
 func (z *ZerodhaMcpServer) LTP() server.ToolHandlerFunc {
 	return func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-		instrumentInterface, ok := request.Params.Arguments["instrument"]
+		instrumentInterface, ok := request.GetArguments()["instrument"]
 		if !ok || instrumentInterface == nil {
 			return nil, fmt.Errorf("instrument parameter is required")
 		}
@@ -187,7 +187,7 @@ func (z *ZerodhaMcpServer) LTP() server.ToolHandlerFunc {
 
 func (z *ZerodhaMcpServer) OHLC() server.ToolHandlerFunc {
 	return func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-		instrument := request.Params.Arguments["instrument"].(string)
+		instrument := request.GetArguments()["instrument"].(string)
 		ohlc, err := z.kc.GetOHLC(instrument)
 		if err != nil {
 			return nil, err
@@ -199,12 +199,12 @@ func (z *ZerodhaMcpServer) OHLC() server.ToolHandlerFunc {
 
 func (z *ZerodhaMcpServer) HistoricalData() server.ToolHandlerFunc {
 	return func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-		instrumentToken := request.Params.Arguments["instrumentToken"].(int)
-		interval := request.Params.Arguments["interval"].(string)
-		fromDateStr := request.Params.Arguments["fromDate"].(string)
-		toDateStr := request.Params.Arguments["toDate"].(string)
-		continuousStr := request.Params.Arguments["continuous"].(string)
-		oiStr := request.Params.Arguments["oi"].(string)
+		instrumentToken := request.GetArguments()["instrumentToken"].(int)
+		interval := request.GetArguments()["interval"].(string)
+		fromDateStr := request.GetArguments()["fromDate"].(string)
+		toDateStr := request.GetArguments()["toDate"].(string)
+		continuousStr := request.GetArguments()["continuous"].(string)
+		oiStr := request.GetArguments()["oi"].(string)
 
 		fromDate, err := time.Parse(timeLayout, fromDateStr)
 		if err != nil {
@@ -257,7 +257,7 @@ func (z *ZerodhaMcpServer) Instruments() server.ToolHandlerFunc {
 
 func (z *ZerodhaMcpServer) InstrumentsByExchange() server.ToolHandlerFunc {
 	return func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-		exchange := request.Params.Arguments["exchange"].(string)
+		exchange := request.GetArguments()["exchange"].(string)
 		instruments, err := z.kc.GetInstrumentsByExchange(exchange)
 		if err != nil {
 			return nil, err
@@ -303,7 +303,7 @@ func (z *ZerodhaMcpServer) MFOrders() server.ToolHandlerFunc {
 
 func (z *ZerodhaMcpServer) MFOrderInfo() server.ToolHandlerFunc {
 	return func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-		orderId := request.Params.Arguments["orderId"].(string)
+		orderId := request.GetArguments()["orderId"].(string)
 		mfOrderInfo, err := z.kc.GetMFOrderInfo(orderId)
 		if err != nil {
 			return nil, err
@@ -315,7 +315,7 @@ func (z *ZerodhaMcpServer) MFOrderInfo() server.ToolHandlerFunc {
 
 func (z *ZerodhaMcpServer) MfSipInfo() server.ToolHandlerFunc {
 	return func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-		sipId := request.Params.Arguments["sipId"].(string)
+		sipId := request.GetArguments()["sipId"].(string)
 		mfSipInfo, err := z.kc.GetMFSIPInfo(sipId)
 		if err != nil {
 			return nil, err
@@ -342,7 +342,7 @@ func (z *ZerodhaMcpServer) MFHoldings() server.ToolHandlerFunc {
 
 func (z *ZerodhaMcpServer) MFHoldingInfo() server.ToolHandlerFunc {
 	return func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-		isin := request.Params.Arguments["isin"].(string)
+		isin := request.GetArguments()["isin"].(string)
 		holdingInfo, err := z.kc.GetMFHoldingInfo(isin)
 		if err != nil {
 			return nil, err
@@ -398,7 +398,7 @@ func (z *ZerodhaMcpServer) UserMargins() server.ToolHandlerFunc {
 
 func (z *ZerodhaMcpServer) UserSegmentMargins() server.ToolHandlerFunc {
 	return func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-		segment := request.Params.Arguments["segment"].(string)
+		segment := request.GetArguments()["segment"].(string)
 		userSegmentMargins, err := z.kc.GetUserSegmentMargins(segment)
 		if err != nil {
 			return nil, err
